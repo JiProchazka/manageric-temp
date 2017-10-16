@@ -1,0 +1,7 @@
+<% if flash.count > 0 %>
+  <script>
+    <% flash.each do |key, msg| %>
+      $.notify(<%= raw("'#{msg}'") %>, {type: "<%= key %>", blur: 0.4, delay: 0, align:"center", verticalAlign:"top"});
+    <% end %>
+  </script>
+<% end %>

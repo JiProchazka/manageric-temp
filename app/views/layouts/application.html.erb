@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" class="app">
+<head>
+  <meta charset="utf-8" />
+  <title>Manageric &bull; Task management that your client will understand</title>
+  <%= csrf_meta_tags %>
+  <meta name="description" content="app, web app, responsive, admin dashboard, admin, flat, flat ui, ui kit, off screen nav" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= favicon_link_tag %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  <!--[if lt IE 9]>
+    <%= javascript_include_tag 'ie', 'data-turbolinks-track': 'reload' %>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:300,700" rel="stylesheet">
+  <%= stylesheet_link_tag params[:controller], media: 'all', 'data-turbolinks-track': 'reload' if asset_exists? %>
+</head>
+<body class="">
+  <section class="vbox">
+    <header class="bg-white-only header header-md navbar navbar-fixed-top-xs">
+
+      <div class="nav navbar-nav hidden-xs">
+        <h1>
+          <%= link_to root_path do %>
+            <%= image_tag "manageric-logo.png", width: "30", height: "30" %>
+            manageri¢
+          <% end %>
+        </h1>
+      </div>
+      <div class="navbar-right ">
+        <ul class="nav navbar-nav m-n hidden-xs nav-user user">
+          <% if is_logged? %>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle bg clear" data-toggle="dropdown">
+                <span class="thumb-sm avatar pull-right m-t-n-sm m-b-n-sm m-l-sm">
+                  <%= image_tag "a0.png" %>
+                </span>
+                <%= current_user.full_name %> <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu animated fadeInRight">
+                <li>
+                  <%= link_to "Logout", users_destroy_path, method: :delete %>
+                </li>
+              </ul>
+            </li>
+          <% else %>
+            <li class="dropdown">
+              <a href="#login" class="dropdown-toggle bg clear" data-toggle="modal">Login</a>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </header>
+    <section>
+      <section class="hbox stretch">
+        <section id="content">
+          <section class="vbox">
+            <%= yield %>
+          </section>
+          <a href="#" class="hide nav-off-screen-block" data-toggle="class:nav-off-screen,open" data-target="#nav,html"></a>
+        </section>
+      </section>
+    </section>
+  </section>
+  <%= render 'partials/messages' %>
+  <%= javascript_include_tag 'charts', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag params[:controller] %>
+</body>
+</html>

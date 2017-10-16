@@ -1,0 +1,166 @@
+<section class="scrollable wrapper">
+  <div class="row">
+    <div id="project_item" class="col-lg-8 col-lg-offset-1">
+      <!-- .crousel slide -->
+      <section class="panel panel-default">
+        <div class="carousel panel-body">
+            <ol class="carousel-indicators out">
+              <li class=""></li>
+              <li class=""></li>
+              <li class="active"></li>
+              <li class="active"></li>
+            </ol>
+            <div class="carousel-inner">
+              <div class="item active">
+                <p class="text-center">
+                  <em class="h4 text-mute"><man-title title="<%= @project_item.title %>"></man-title></em><br>
+                  <small class="text-muted"><%= "##{@project_item.code}, #{@project_item.state.labelize}" %></small>
+                </p>
+              </div>
+            </div>
+        </div>
+        <ul class="list-group no-radius">
+          <li class="list-group-item panel-heading">
+            <div class="row">
+              <div class="col-lg-1">
+                <strong>Project</strong>
+              </div>
+              <div class="col-lg-10">
+                <%= link_to @project.name, @project %>
+              </div>
+              <div class="col-lg-1">
+                <!-- <span class="label bg-warning pull-right m-t-xs">2 / 4 done</span> -->
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class="text-muted">
+              <span class="pull-right"><i class="fa fa-clock-o icon-muted"></i>&nbsp;&nbsp;<%= @project_item.created_at.in_time_zone.strftime("#{@project_item.created_at.day.ordinalize} %b, %Y, %k:%M") %></span>
+              <i class="fa fa-user icon-muted"></i>
+              &nbsp;<%= @project_item.created_by %>
+            </div>
+          </li>
+        </ul>
+      </section>
+      <!-- / .carousel slide -->
+
+      <!-- left tab -->
+      <section class="panel panel-default">
+        <header class="panel-heading bg-light">
+          <ul class="nav nav-tabs pull-right">
+            <li class="active"><a href="#messages-1" data-toggle="tab"><i class="fa fa-quote-right text-muted"></i></a></li>
+            <li><a href="#files" data-toggle="tab"><i class="fa fa-cloud-download text-muted"></i> Files</a></li>
+          </ul>
+          <span class="hidden-sm">Description</span>
+        </header>
+        <div class="panel-body">
+        <div class="tab-content">
+          <div class="tab-pane active" id="messages-1">
+            <%= hidden_field_tag :access_token, current_user.token %>
+            <man-description description="<%= @project_item.description %>"></man-description>
+          </div>
+          <div class="tab-pane" id="files">
+            <ul>
+              <li>
+                <a href="#">Description.docx</a>
+              </li>
+              <li>
+                <a href="#">Schema.png</a>
+              </li>
+            </ul>
+            <div class="dropfile visible-lg">
+              <small>Drag and Drop file here</small>
+            </div>
+          </div>
+          <div class="tab-pane" id="settings-1">settings</div>
+        </div>
+      </div>
+      </section>
+      <!-- / left tab -->
+      <% if @project_item.comments.size == 0 %>
+        <h4 class="m-t-lg m-b-lg text-center">No comments yet. Say something...</h4>
+      <% end %>
+      <!-- .comment-list -->
+      <section class="comment-list block">
+        <% @comments.each_with_index do |comment, index| %>
+          <article id="comment-id-<%= index %>" class="comment-item">
+            <a class="pull-left thumb-sm avatar">
+              <%= image_tag "a0.png", class: "img-circle" %>
+            </a>
+            <span class="arrow left"></span>
+            <section class="comment-body panel panel-default">
+              <header class="panel-heading bg-white">
+                <%= comment.created_by %>
+                <%= comment.author_badge %>
+                <span class="text-muted m-l-sm pull-right" title="<%= comment.created_at.in_time_zone.strftime("#{@project_item.created_at.day.ordinalize} %b, %Y, %k:%M") %>">
+                  <i class="fa fa-clock-o"></i>
+                  <%= time_ago_in_words(comment.created_at) %> ago
+                </span>
+              </header>
+              <div class="panel-body">
+                <% if comment.created_by_id == current_user._id %>
+                  <div><man-comment content="<%= comment.content %>" comment-id="<%= comment._id %>" project-item-id="<%= @project_item._id %>"></man-comment></div>
+                  <div class="comment-action m-t-sm">
+                    <%= link_to project_project_item_comment_path(@project, @project_item, comment), class: "btn btn-default btn-xs", data: { confirm: "Do you really want to delete this comment? There is no way back" }, method: :delete do %>
+                      <i class="fa fa-trash-o text-muted"></i>
+                      Remove
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div><%= comment.content %></div>
+                <% end %>
+              </div>
+            </section>
+          </article>
+        <% end %>
+        <!-- comment form -->
+
+        <article class="comment-item media" id="comment-form">
+          <a class="pull-left thumb-sm avatar"><%= image_tag "a0.png" %></a>
+          <section class="media-body">
+            <%= form_with model: [@project, @project_item, Comment.new], class: "m-b-none", data: { parsley_validate: "", remote: false } do |f| %>
+              <div class="input-group">
+                <%= f.text_field :content, class: "form-control", placeholder: "Input your comment here", autocomplete: "off", data: { parsley_required: true } %>
+                <span class="input-group-btn">
+                  <%= f.submit "POST", class: "btn btn-primary" %>
+                </span>
+              </div>
+            <% end %>
+          </section>
+        </article>
+      </section>
+      <!-- / .comment-list -->
+    </div>
+    <div class="col-lg-3">
+      <!-- <div class="btn-group">
+        <button class="btn btn-default"><i class="fa fa-plus text-muted"></i> Create..</button>
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="#"><span class="label bg-success">&bull;</span>&nbsp;&nbsp;&nbsp;User Story</a></li>
+          <li><a href="#"><span class="label bg-primary">&bull;</span>&nbsp;&nbsp;&nbsp;Bug</a></li>
+          <li><a href="#"><span class="label bg-info">&bull;</span>&nbsp;&nbsp;&nbsp;Improvement</a></li>
+        </ul>
+      </div> -->
+      <div class="btn-group">
+        <button class="btn btn-default">Action</button>
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li>
+            <%= link_to "Delete", project_project_item_path(@project, @project_item), method: :delete, data: { confirm: "Do you really want to delete this item? There is no way back" } %>
+          </li>
+        </ul>
+      </div>
+      <div>&nbsp;</div>
+      <%= form_with url: project_project_items_change_state_path, method: :post do |f| %>
+        <%= f.hidden_field :project_item_id, value: @project_item._id %>
+        <div class="btn-group-vertical" data-toggle="buttons">
+          <% @state_buttons.each do |button| %>
+            <label class="btn btn-sm btn-default<%= button[:css_class] %>">
+              <%= radio_button_tag :state, button[:value], button[:selected], data: { behavior: "submit-on-change" } %><i class="fa fa-check text-active"></i> <%= button[:title] %>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,183 @@
+<section class="scrollable padder">
+  <div class="m-b-md">
+    <div class="row">
+      <div class="col-sm-11 col-sm-offset-1">
+        <div class="col-lg-12">
+          <h3 class="m-b-none"><%= @project.name %></h3>
+          <small><%= @project.customer %></small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-2 col-lg-offset-1">
+      <div class="text-center m-b">
+        <div class="text-right text-left-xs">
+         <section class="panel panel-default">
+          <div class="panel-body text-center">
+            <div class="inline">
+              <div class="easypiechart" data-percent="<%= @project.stats.percentage %>" data-line-width="10" data-track-color="#eee" data-bar-color="#5dce49" data-scale-color="#fff" data-size="188" data-line-cap='butt'>
+                <div>
+                  <span class="h2 m-l-sm step"><%= @project.stats.percentage %></span>%
+                  <div class="text text-sm">done</div>
+                </div>
+              </div>
+            </div>
+          </div>
+         </section>
+        </div>
+      </div>
+      <div class="panel wrapper">
+        <div class="row text-center">
+          <div class="col-xs-6">
+            <a href="#">
+              <span class="m-b-xs h4 block"><%= @project.stats.items_count %></span>
+              <small class="text-muted">Items</small>
+            </a>
+          </div>
+          <div class="col-xs-6">
+            <a href="#">
+              <span class="m-b-xs h4 block"><%= @project.stats.items_open %></span>
+              <small class="text-muted">Open</small>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <small class="text-uc text-xs text-muted">client</small>
+        <p><%= @project.customer %></p>
+        <% unless @project.info.empty? %>
+          <small class="text-uc text-xs text-muted">info</small>
+          <p><%= @project.info %></p>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <section class="panel panel-default">
+        <header class="panel-heading text-right bg-light">
+          <ul class="nav nav-tabs pull-left">
+            <li class="active"><a href="#userstories" data-toggle="tab"><i class="fa fa-sitemap icon-muted"></i> User Stories</a></li>
+            <li><a href="#users" data-toggle="tab"><i class="fa fa-user icon-muted"></i> Users</a></li>
+          </ul>
+          <span class="hidden-sm">&nbsp;</span>
+        </header>
+        <!-- <div class="panel-body"> -->
+          <div class="tab-content">
+            <div class="tab-pane fade active in" id="userstories">
+              <header class="panel-heading panel-heading-white">
+                <%= form_with url: project_project_items_path(project_id: params[:id]), data: { parsley_validate: "", remote: false } do |f| %>
+                  <div class="input-group text-sm">
+                    <%= f.text_field :title, class: "input-sm form-control", placeholder: "Create a new User Story, Bug or Improvement", data: { parsley_required: true }, autocomplete: "off" %>
+                    <div class="btn-group input-group-btn">
+                      <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Create <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li>
+                          <%= f.submit "User Story", class: "dropdown-menu-item" %>
+                        </li>
+                        <li>
+                          <%= f.submit "Bug", class: "dropdown-menu-item" %>
+                        </li>
+                        <li>
+                          <%= f.submit "Improvement", class: "dropdown-menu-item" %>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="#" v-on:click="showHelp(true)" v-if="!app.showHelp">Show Help</a></li>
+                        <li><a href="#" v-on:click="showHelp(false)" v-if="app.showHelp">Hide Help</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                <% end %>
+              </header>
+              <transition name="fade">
+                <div id="collapseOne" class="panel-collapse in" v-if="app.showHelp">
+                  <div class="panel-body text-sm">
+                    <p><span class="label bg-primary">User Story</span>&nbsp;&nbsp;is an item representing some task to be done. For example "<em>User can create new Order</em>" is such item.<br />
+                    User story can have subitems like another user stories, bugs or improvements. You can create root bug and improvement (one without the parent user story) as well.<br /></p>
+                    <p><span class="label bg-info">Bug</span>&nbsp;&nbsp;is an item representing some fix to be done. For example "<em>User cannot log in</em>".<br /> It can be nested under the User Story, or it can be created directly under the project itself.</p>
+                    <p><span class="label bg-success">Improvement</span>&nbsp;&nbsp;is some item representing one particular task, which is too narrow and specific in compare to User Story. For example "<em>There should be an icon on the user profile for contacts</em>".</p>
+                  </div>
+                </div>
+              </transition>
+              <ul class="list-group no-radius m-b-none m-t-none list-group-lg no-border">
+                <% @project_items.each do |p| %>
+                  <li class="list-group-item" data-toggle="tooltip" data-placement="left" title="" data-original-title="<%= p.full_title %>">
+                    <span class="pull-right"><%= p.state.labelize %></span>
+                    <span class="label <%= p.project_item_type_css %>"><%= p.code %></span>
+                    &nbsp;<%= link_to p.title, browse_path(@project, p) %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="users">
+              <%= hidden_field_tag :access_token, current_user.token %>
+                <header class="panel-heading panel-heading-white">
+                  <div class="text-sm">
+                    <input type="text" class="input-sm form-control" placeholder="Search an user to add him / her to the project.." v-model="term">
+                  </div>
+                </header>
+                <ul class="list-group no-radius m-b-none m-t-none m-l-none m-r-none list-group-lg no-border">
+                  <li class="list-group-item bg-primary lter" v-for="foundUser in foundUsers">
+                    <div class="media">
+                      <span class="pull-left thumb-sm"><%= image_tag "a0.png", class: "img-circle" %></span>
+                      <div class="pull-right text-success m-t-xs">
+                        <a href="#" class="btn btn-default btn-sm" v-on:click="addUserToProject(foundUser)">Add to the Project</a>
+                      </div>
+                      <div class="media-body">
+                        <div><a href="#">{{ foundUser.full_name }}</a></div>
+                        <small class="text-muted">@{{ foundUser.user_name }}</small>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item" v-for="user in users">
+                    <div class="media">
+                      <span class="pull-left thumb-sm"><%= image_tag "a0.png", class: "img-circle" %></span>
+                      <div class="pull-right text-success m-t-sm">
+                        <a href="#" class="btn btn-default btn-xs" v-on:click="removeUserFromProject(user)">Remove</a>
+                      </div>
+                      <div class="media-body">
+                        <div>{{ user.full_name }}</div>
+                        <small class="text-muted">@{{ user.user_name }}</small>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="media">
+                      <span class="pull-left thumb-sm"><%= image_tag "a0.png", class: "img-circle" %></span>
+                      <div class="pull-right text-success m-t-sm">
+                        Owner
+                      </div>
+                      <div class="media-body">
+                        <div>{{ owner.full_name }}</div>
+                        <small class="text-muted">@{{ owner.user_name }}</small>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+            </div>
+          </div>
+        <!-- </div> -->
+      </section>
+    </div>
+    <div class="col-lg-3">
+        <section class="scrollable">
+          <div class="panel">
+            <h4 class="font-thin padder">Latest Activity</h4>
+            <ul class="list-group">
+              <li class="list-group-item">
+                  <p>@Jiri Prochazka has changed status of <a href="#" class="text-info" data-toggle="tooltip" data-placement="left" title="" data-original-title="User can create new order">#T108</a> to <strong>In Progress</strong></p>
+                  <small class="block text-muted"><i class="fa fa-clock-o"></i> 1 minute ago</small>
+              </li>
+              <li class="list-group-item">
+                  <p>@Jiri Prochazka has created <a href="#" class="text-info" data-toggle="tooltip" data-placement="left" title="" data-original-title="User can create new order">#T108</a></p>
+                  <small class="block text-muted"><i class="fa fa-clock-o"></i> 2 minutes ago</small>
+              </li>
+              <li class="list-group-item">
+                  <p>@Josh Long has added a comment to <a href="#" class="text-info" data-toggle="tooltip" data-placement="left" title="" data-original-title="Cannot Log In">#B702</a></p>
+                  <small class="block text-muted"><i class="fa fa-clock-o"></i> 2 hours ago</small>
+              </li>
+            </ul>
+          </div>
+        </section>
+    </div>
+  </div>
+</section>

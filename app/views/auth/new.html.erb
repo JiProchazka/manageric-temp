@@ -1,0 +1,41 @@
+<section class="scrollable padder">
+  <section class="layout-content">
+    <div class="row">
+      <div class="col-lg-offset-1 col-lg-5 m-t-xl m-b-xl home">
+        <h1>Task Management</h1>
+        <p>Private project only at current time. <strong>But we will go live soon.</strong></p>
+        <small>If you think you find it useful, contact us here:</small>
+        <div class="m-t-lg">
+          <a href="mailto:info@coderocket.co" class="btn btn-s-md btn-default btn-rounded">info@coderocket.co</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal fade" id="login">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body wrapper-lg">
+          <div class="row">
+            <div class="col-sm-12">
+              <h3 class="m-t-none m-b">Sign in</h3>
+              <%= form_for @login_user, data: { parsley_validate: "" } do |f| %>
+                <div class="form-group">
+                  <%= f.label :email %>
+                  <%= f.text_field :email, class: "form-control", placeholder: "Enter email", autocomplete: "off", data: { parsley_required: true, parsley_type: "email" } %>
+                </div>
+                <div class="form-group">
+                  <%= f.label :password %>
+                  <%= f.password_field :password, class: "form-control" , placeholder: "Password", data: { parsley_required: true } %>
+                </div>
+                <div class="checkbox m-t-lg">
+                  <%= f.submit "Log in", class: "btn btn-success pull-right text-uc m-t-n-xs" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+</section>
